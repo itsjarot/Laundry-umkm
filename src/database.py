@@ -30,9 +30,14 @@ def init_db():
                 status TEXT NOT NULL DEFAULT 'antri'
                     CHECK(status IN ('antri','proses','selesai','diambil')),
                 estimated_date TEXT NOT NULL,
+                is_paid INTEGER NOT NULL DEFAULT 0,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
         """)
+        try:
+            db.execute("ALTER TABLE orders ADD COLUMN is_paid INTEGER NOT NULL DEFAULT 0")
+        except sqlite3.OperationalError:
+            pass
 
 
 def generate_order_number():
@@ -43,7 +48,7 @@ def generate_order_number():
 
 def hitung_total(weight_kg, service_type):
     harga = HARGA.get(service_type, 7000)
-    return int(weight_kg) * harga
+    return float(weight_kg) * harga
 
 
 def hitung_estimasi(service_type):
@@ -82,6 +87,18 @@ def get_all_orders(status=None):
         return [dict(r) for r in rows]
 
 
+def get_status_counts():
+    with get_db() as db:
+        rows = db.execute("""
+            SELECT status, COUNT(*) as count
+            FROM orders
+            GROUP BY status
+        """).fetchall()
+        counts = {r["status"]: r["count"] for r in rows}
+        counts["total"] = sum(counts.values())
+        return counts
+
+
 def get_stats():
     with get_db() as db:
         today = datetime.today().strftime("%Y-%m-%d")
@@ -90,7 +107,7 @@ def get_stats():
                 COUNT(*) AS total_masuk,
                 SUM(CASE WHEN status='selesai' THEN 1 ELSE 0 END) AS selesai,
                 SUM(CASE WHEN status IN ('antri','proses') THEN 1 ELSE 0 END) AS pending,
-                COALESCE(SUM(CASE WHEN status='selesai' THEN total_price ELSE 0 END), 0) AS pemasukan
+                COALESCE(SUM(CASE WHEN is_paid=1 THEN total_price ELSE 0 END), 0) AS pemasukan
             FROM orders
             WHERE DATE(created_at) = ?
         """, (today,)).fetchone()
@@ -105,18 +122,35 @@ def get_laporan():
                 COUNT(*) AS total_masuk,
                 SUM(CASE WHEN status='selesai' THEN 1 ELSE 0 END) AS selesai,
                 SUM(CASE WHEN status IN ('antri','proses') THEN 1 ELSE 0 END) AS pending,
-                COALESCE(SUM(CASE WHEN status='selesai' THEN total_price ELSE 0 END), 0) AS pemasukan
+                COALESCE(SUM(CASE WHEN is_paid=1 THEN total_price ELSE 0 END), 0) AS pemasukan
             FROM orders
             WHERE DATE(created_at) = ?
         """, (today,)).fetchone()
 
-        belum_diambil = db.execute("""
+        belum_bayar = db.execute("""
             SELECT * FROM orders
-            WHERE status != 'diambil'
+            WHERE is_paid = 0
+            ORDER BY created_at ASC
+        """).fetchall()
+
+        sudah_bayar = db.execute("""
+            SELECT * FROM orders
+            WHERE is_paid = 1
             ORDER BY created_at ASC
         """).fetchall()
 
         return {
             "stats": dict(stats),
-            "belum_diambil": [dict(r) for r in belum_diambil]
+            "belum_bayar": [dict(r) for r in belum_bayar],
+            "sudah_bayar": [dict(r) for r in sudah_bayar]
         }
+
+
+def mark_paid(order_id):
+    with get_db() as db:
+        db.execute("UPDATE orders SET is_paid = 1 WHERE id = ?", (order_id,))
+
+
+def delete_order(order_id):
+    with get_db() as db:
+        db.execute("DELETE FROM orders WHERE id = ?", (order_id,))

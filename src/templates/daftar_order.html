@@ -7,11 +7,11 @@
 </div>
 
 <div class="filter-bar">
-    <a href="/daftar-order" class="filter-btn {% if not status_filter %}active{% endif %}">Semua</a>
-    <a href="/daftar-order?status=antri" class="filter-btn {% if status_filter == 'antri' %}active{% endif %}">Antri</a>
-    <a href="/daftar-order?status=proses" class="filter-btn {% if status_filter == 'proses' %}active{% endif %}">Proses</a>
-    <a href="/daftar-order?status=selesai" class="filter-btn {% if status_filter == 'selesai' %}active{% endif %}">Selesai</a>
-    <a href="/daftar-order?status=diambil" class="filter-btn {% if status_filter == 'diambil' %}active{% endif %}">Diambil</a>
+    <a href="/daftar-order" class="filter-btn {% if not status_filter %}active{% endif %}">Semua ({{ counts.total }})</a>
+    <a href="/daftar-order?status=antri" class="filter-btn {% if status_filter == 'antri' %}active{% endif %}">Antri ({{ counts.get('antri', 0) }})</a>
+    <a href="/daftar-order?status=proses" class="filter-btn {% if status_filter == 'proses' %}active{% endif %}">Proses ({{ counts.get('proses', 0) }})</a>
+    <a href="/daftar-order?status=selesai" class="filter-btn {% if status_filter == 'selesai' %}active{% endif %}">Selesai ({{ counts.get('selesai', 0) }})</a>
+    <a href="/daftar-order?status=diambil" class="filter-btn {% if status_filter == 'diambil' %}active{% endif %}">Diambil ({{ counts.get('diambil', 0) }})</a>
 </div>
 
 {% if orders %}
@@ -24,16 +24,26 @@
         <div class="order-body">
             <p><strong>{{ order.customer_name }}</strong></p>
             <p>{{ order.weight_kg }} kg &bull; {{ order.service_type|title }} &bull; Rp{{ "{:,.0f}".format(order.total_price) }}</p>
-            <p>Estimasi: {{ order.estimated_date }}</p>
+            <p>Estimasi: {{ order.estimated_date|tgl_id }}</p>
             {% if order.customer_phone %}
             <p>HP: {{ order.customer_phone }}</p>
             {% endif %}
+            <p>
+                {% if order.is_paid %}
+                <span class="badge badge-lunas">Lunas</span>
+                {% else %}
+                <span class="badge badge-belum-bayar">Belum Bayar</span>
+                {% endif %}
+            </p>
         </div>
         <div class="order-actions">
             {% if order.status == 'antri' %}
             <form method="POST" action="/order/{{ order.id }}/status">
                 <input type="hidden" name="status" value="proses">
                 <button class="btn">Proses</button>
+            </form>
+            <form method="POST" action="/order/{{ order.id }}/batalkan" onsubmit="return confirm('Yakin ingin membatalkan order #{{ order.order_number }}?')">
+                <button class="btn" style="background:#dc2626;">Batalkan</button>
             </form>
             {% endif %}
             {% if order.status == 'proses' %}
@@ -47,6 +57,11 @@
                 <input type="hidden" name="status" value="diambil">
                 <button class="btn btn-secondary">Diambil</button>
             </form>
+            {% if not order.is_paid %}
+            <form method="POST" action="/order/{{ order.id }}/bayar">
+                <button class="btn" style="background:#16a34a;">Tandai Lunas</button>
+            </form>
+            {% endif %}
             {% endif %}
         </div>
     </div>

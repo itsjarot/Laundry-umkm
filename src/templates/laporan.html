@@ -30,9 +30,9 @@
 </div>
 
 <div class="card">
-    <h3 style="font-size:1rem;margin-bottom:12px;color:#374151;">Belum Diambil</h3>
-    {% if data.belum_diambil %}
-        {% for order in data.belum_diambil %}
+    <h3 style="font-size:1rem;margin-bottom:12px;color:#dc2626;">Belum Bayar</h3>
+    {% if data.belum_bayar %}
+        {% for order in data.belum_bayar %}
         <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;{% if not loop.last %}border-bottom:1px solid #f0f0f0;{% endif %}">
             <div>
                 <strong style="font-size:0.9rem;">#{{ order.order_number }}</strong>
@@ -40,13 +40,37 @@
             </div>
             <div style="text-align:right;">
                 <span style="font-size:0.85rem;font-weight:600;">Rp{{ "{:,.0f}".format(order.total_price) }}</span>
+                <span style="font-size:0.75rem;color:#9ca3af;display:block;">{{ order.estimated_date|tgl_id }}</span>
                 <span class="badge badge-{{ order.status }}" style="margin-left:8px;">{{ order.status|title }}</span>
             </div>
         </div>
         {% endfor %}
     {% else %}
         <p style="color:#6b7280;font-size:0.9rem;text-align:center;padding:16px 0;">
-            Semua order sudah diambil
+            Semua order sudah dibayar
+        </p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <h3 style="font-size:1rem;margin-bottom:12px;color:#16a34a;">Sudah Bayar</h3>
+    {% if data.sudah_bayar %}
+        {% for order in data.sudah_bayar %}
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;{% if not loop.last %}border-bottom:1px solid #f0f0f0;{% endif %}">
+            <div>
+                <strong style="font-size:0.9rem;">#{{ order.order_number }}</strong>
+                <span style="font-size:0.85rem;color:#4b5563;margin-left:8px;">{{ order.customer_name }}</span>
+            </div>
+            <div style="text-align:right;">
+                <span style="font-size:0.85rem;font-weight:600;">Rp{{ "{:,.0f}".format(order.total_price) }}</span>
+                <span style="font-size:0.75rem;color:#9ca3af;display:block;">{{ order.estimated_date|tgl_id }}</span>
+                <span class="badge badge-{{ order.status }}" style="margin-left:8px;">{{ order.status|title }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p style="color:#6b7280;font-size:0.9rem;text-align:center;padding:16px 0;">
+            Belum ada pembayaran
         </p>
     {% endif %}
 </div>
