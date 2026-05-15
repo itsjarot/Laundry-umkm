@@ -69,3 +69,60 @@ semua otomatis dari data order
 - Tidak ada menu yang dalam/tersembunyi
 - Bahasa Indonesia semua
 - Tombol besar, cocok untuk layar HP
+
+---
+
+## Wireframe (Text Version)
+
+### Halaman 1: Dashboard
+
++---------------------------+
+|  🧺 Laundry System        |
++---------------------------+
+|  [+ Order Baru]           |
++---------------------------+
+|  HARI INI                 |
+|  📦 Order Masuk  : 8      |
+|  ✅ Selesai      : 3      |
+|  ⏳ Pending      : 5      |
+|  💰 Pemasukan    : 85.000 |
++---------------------------+
+|  [Daftar Order] [Laporan] |
++---------------------------+
+
+### Halaman 2: Daftar Order
++---------------------------+
+|  ← Daftar Order           |
++---------------------------+
+|  [Semua][Antri][Proses]   |
+|  [Selesai][Diambil]       |
++---------------------------+
+|  #LDR-001 | Budi          |
+|  2kg Reguler | ANTRI      |
+|  Estimasi: 17 Mei         |
++---------------------------+
+|  #LDR-002 | Sari          |
+|  3kg Express | PROSES     |
+|  Estimasi: 16 Mei         |
++---------------------------+
+
+### Halaman 3: Order Baru
++---------------------------+
+|  ← Order Baru             |
++---------------------------+
+|  Nama Pelanggan           |
+|  [........................]|
+|                           |
+|  Nomor HP                 |
+|  [........................]|
+|                           |
+|  Berat (kg)               |
+|  [........................]|
+|                           |
+|  Jenis Layanan            |
+|  ( ) Reguler 3hr - 7rb/kg |
+|  ( ) Express 1hr - 12rb/kg|
++---------------------------+
+|  Total: Rp 0              |
+|  [Simpan Order]           |
++---------------------------+
