@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Laundry System{% endblock %}
+{% block content %}
+<div class="header">
+    <h1>🧺 Laundry System</h1>
+    <p>Selamat datang</p>
+</div>
+
+<div class="stats" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+    <div class="card" style="text-align:center;">
+        <h2 style="font-size:1.8rem;color:#2563eb;">{{ stats.total_masuk }}</h2>
+        <p style="color:#6b7280;font-size:0.85rem;">Order Masuk</p>
+    </div>
+    <div class="card" style="text-align:center;">
+        <h2 style="font-size:1.8rem;color:#16a34a;">{{ stats.selesai }}</h2>
+        <p style="color:#6b7280;font-size:0.85rem;">Selesai</p>
+    </div>
+    <div class="card" style="text-align:center;">
+        <h2 style="font-size:1.8rem;color:#d97706;">{{ stats.pending }}</h2>
+        <p style="color:#6b7280;font-size:0.85rem;">Pending</p>
+    </div>
+    <div class="card" style="text-align:center;">
+        <h2 style="font-size:1.5rem;color:#059669;">Rp {{ "{:,.0f}".format(stats.pemasukan) }}</h2>
+        <p style="color:#6b7280;font-size:0.85rem;">Pemasukan</p>
+    </div>
+</div>
+
+<a href="/order-baru" class="btn">+ Order Baru</a>
+
+<div class="nav-links">
+    <a href="/daftar-order" class="btn btn-secondary">Daftar Order</a>
+    <a href="/laporan" class="btn btn-secondary">Laporan</a>
+</div>
+{% endblock %}

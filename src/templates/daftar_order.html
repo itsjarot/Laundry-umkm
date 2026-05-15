@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Daftar Order - Laundry System{% endblock %}
+{% block content %}
+<div class="page-title">
+    <a href="/">&larr; Kembali</a>
+    <h2>Daftar Order</h2>
+</div>
+
+<div class="filter-bar">
+    <a href="/daftar-order" class="filter-btn {% if not status_filter %}active{% endif %}">Semua</a>
+    <a href="/daftar-order?status=antri" class="filter-btn {% if status_filter == 'antri' %}active{% endif %}">Antri</a>
+    <a href="/daftar-order?status=proses" class="filter-btn {% if status_filter == 'proses' %}active{% endif %}">Proses</a>
+    <a href="/daftar-order?status=selesai" class="filter-btn {% if status_filter == 'selesai' %}active{% endif %}">Selesai</a>
+    <a href="/daftar-order?status=diambil" class="filter-btn {% if status_filter == 'diambil' %}active{% endif %}">Diambil</a>
+</div>
+
+{% if orders %}
+    {% for order in orders %}
+    <div class="order-card">
+        <div class="order-header">
+            <span class="order-number">#{{ order.order_number }}</span>
+            <span class="badge badge-{{ order.status }}">{{ order.status|title }}</span>
+        </div>
+        <div class="order-body">
+            <p><strong>{{ order.customer_name }}</strong></p>
+            <p>{{ order.weight_kg }} kg &bull; {{ order.service_type|title }} &bull; Rp{{ "{:,.0f}".format(order.total_price) }}</p>
+            <p>Estimasi: {{ order.estimated_date }}</p>
+            {% if order.customer_phone %}
+            <p>HP: {{ order.customer_phone }}</p>
+            {% endif %}
+        </div>
+        <div class="order-actions">
+            {% if order.status == 'antri' %}
+            <form method="POST" action="/order/{{ order.id }}/status">
+                <input type="hidden" name="status" value="proses">
+                <button class="btn">Proses</button>
+            </form>
+            {% endif %}
+            {% if order.status == 'proses' %}
+            <form method="POST" action="/order/{{ order.id }}/status">
+                <input type="hidden" name="status" value="selesai">
+                <button class="btn">Selesai</button>
+            </form>
+            {% endif %}
+            {% if order.status == 'selesai' %}
+            <form method="POST" action="/order/{{ order.id }}/status">
+                <input type="hidden" name="status" value="diambil">
+                <button class="btn btn-secondary">Diambil</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+<div class="card" style="text-align:center;color:#6b7280;">
+    <p style="font-size:1.2rem;margin-bottom:8px;">Belum ada order</p>
+    <p style="font-size:0.9rem;">Klik "+ Order Baru" untuk mencatat order pertama</p>
+</div>
+{% endif %}
+
+<a href="/order-baru" class="btn">+ Order Baru</a>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Order Baru - Laundry System{% endblock %}
+{% block content %}
+<div class="page-title">
+    <a href="/">&larr; Kembali</a>
+    <h2>Order Baru</h2>
+</div>
+
+{% if saved %}
+<div class="success-msg">
+    <strong>Order Berhasil Disimpan!</strong>
+    Nomor Order: {{ saved }}
+    <p style="margin-top:8px;font-size:0.9rem">Tunjukkan ke pelanggan sebagai bukti.</p>
+</div>
+<a href="/order-baru" class="btn">+ Order Lagi</a>
+<a href="/daftar-order" class="btn btn-secondary" style="margin-top:8px">Lihat Daftar Order</a>
+{% else %}
+<div class="card">
+    <form method="POST">
+        <div class="form-group">
+            <label for="customer_name">Nama Pelanggan</label>
+            <input type="text" id="customer_name" name="customer_name" required placeholder="Contoh: Budi Santoso">
+        </div>
+
+        <div class="form-group">
+            <label for="customer_phone">Nomor HP</label>
+            <input type="tel" id="customer_phone" name="customer_phone" placeholder="08xxxxxx">
+        </div>
+
+        <div class="form-group">
+            <label for="weight_kg">Berat (kg)</label>
+            <input type="number" id="weight_kg" name="weight_kg" required min="0.5" step="0.5" placeholder="Contoh: 2" oninput="hitungTotal()">
+        </div>
+
+        <div class="form-group">
+            <label>Jenis Layanan</label>
+            <div class="radio-group">
+                <label id="label-reguler" class="selected" onclick="pilihLayanan('reguler')">
+                    <input type="radio" name="service_type" value="reguler" checked>
+                    <strong>Reguler</strong> — 3 hari &bull; Rp7.000/kg
+                </label>
+                <label id="label-express" onclick="pilihLayanan('express')">
+                    <input type="radio" name="service_type" value="express">
+                    <strong>Express</strong> — 1 hari &bull; Rp12.000/kg
+                </label>
+            </div>
+        </div>
+
+        <div class="total-box">
+            <div class="label">Total Harga</div>
+            <div class="amount" id="total-display">Rp 0</div>
+        </div>
+
+        <button type="submit" class="btn">Simpan Order</button>
+    </form>
+</div>
+{% endif %}
+
+<script>
+const HARGA = { reguler: 7000, express: 12000 };
+
+function pilihLayanan(jenis) {
+    document.getElementById('label-reguler').classList.toggle('selected', jenis === 'reguler');
+    document.getElementById('label-express').classList.toggle('selected', jenis === 'express');
+    document.querySelector('input[name="service_type"][value="' + jenis + '"]').checked = true;
+    hitungTotal();
+}
+
+function hitungTotal() {
+    const kg = parseFloat(document.getElementById('weight_kg').value) || 0;
+    const jenis = document.querySelector('input[name="service_type"]:checked').value;
+    const total = kg * HARGA[jenis];
+    document.getElementById('total-display').textContent = 'Rp ' + total.toLocaleString('id-ID');
+}
+</script>
+{% endblock %}

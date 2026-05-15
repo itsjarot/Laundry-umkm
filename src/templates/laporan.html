@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Laporan Harian - Laundry System{% endblock %}
+{% block content %}
+<div class="page-title">
+    <a href="/">&larr; Kembali</a>
+    <h2>Laporan Harian</h2>
+</div>
+
+<p style="color:#6b7280;font-size:0.9rem;margin-bottom:16px;">
+    {{ today }}
+</p>
+
+<div class="stats" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+    <div class="card" style="text-align:center;">
+        <h2 style="font-size:1.8rem;color:#2563eb;">{{ data.stats.total_masuk }}</h2>
+        <p style="color:#6b7280;font-size:0.85rem;">Order Masuk</p>
+    </div>
+    <div class="card" style="text-align:center;">
+        <h2 style="font-size:1.8rem;color:#16a34a;">{{ data.stats.selesai }}</h2>
+        <p style="color:#6b7280;font-size:0.85rem;">Selesai</p>
+    </div>
+    <div class="card" style="text-align:center;">
+        <h2 style="font-size:1.8rem;color:#d97706;">{{ data.stats.pending }}</h2>
+        <p style="color:#6b7280;font-size:0.85rem;">Pending</p>
+    </div>
+    <div class="card" style="text-align:center;">
+        <h2 style="font-size:1.5rem;color:#059669;">Rp {{ "{:,.0f}".format(data.stats.pemasukan) }}</h2>
+        <p style="color:#6b7280;font-size:0.85rem;">Pemasukan</p>
+    </div>
+</div>
+
+<div class="card">
+    <h3 style="font-size:1rem;margin-bottom:12px;color:#374151;">Belum Diambil</h3>
+    {% if data.belum_diambil %}
+        {% for order in data.belum_diambil %}
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;{% if not loop.last %}border-bottom:1px solid #f0f0f0;{% endif %}">
+            <div>
+                <strong style="font-size:0.9rem;">#{{ order.order_number }}</strong>
+                <span style="font-size:0.85rem;color:#4b5563;margin-left:8px;">{{ order.customer_name }}</span>
+            </div>
+            <div style="text-align:right;">
+                <span style="font-size:0.85rem;font-weight:600;">Rp{{ "{:,.0f}".format(order.total_price) }}</span>
+                <span class="badge badge-{{ order.status }}" style="margin-left:8px;">{{ order.status|title }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p style="color:#6b7280;font-size:0.9rem;text-align:center;padding:16px 0;">
+            Semua order sudah diambil
+        </p>
+    {% endif %}
+</div>
+
+<a href="/" class="back-home">Kembali ke Dashboard</a>
+{% endblock %}
